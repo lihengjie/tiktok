@@ -4,21 +4,37 @@ import time
 import datetime
 import json
 
-# 测试环境
-host = 'mercury.snssdk.com'
+import hashlib
+import string
+import random
 
-# 生产环境
-# host = 'stream.feedcoopapi.com'
+# env = 'test'
+env = 'pro'
+host = ''
+secret_key = ''
 
-# curl --location --request POST 'mercury.snssdk.com/cooper/sync/third_upload?partner_id=1234&key_index=1&nonce=ibuaiVcKdpRxkhJA&time_stamp=1615866073439&sign=EE219A9F167884B338FADCD8211FB94A' \
-# --header 'Content-Type: multipart/form-data' \
-# --form 'input=@"/path/to/file"'
+if env == 'pro' :
+    # 生产环境
+    host = 'stream.feedcoopapi.com'
+    # 正式环境
+    secret_key = 'ohjXauDLcyp7ZA2DPqV6YsYrVHU75rVH'
+else:
+    # 测试环境
+    host = 'mercury.snssdk.com'
+    # 测试环境
+    secret_key = '192006250b4c09247ec02edce69f6a2d'
+
 
 partner_id = '21'
 key_index = '1'
-secret_key = '192006250b4c09247ec02edce69f6a2d'
 
-import hashlib
+
+def getRandStr(n):
+    '''生成长度为 n 的随机账号'''
+    # 数字+大小写字母组合
+    s = string.digits + string.ascii_letters
+    words = random.sample(s, n)
+    return ''.join(words)
 
 
 # md5加密
@@ -39,7 +55,8 @@ def getSign(paramStr):
 
 def getParamAndSign():
     time_stamp = str(int(round(time.time()*1000)))
-    paramStr = f'key_index={key_index}&nonce=ibuaiVcKdpRxkhJA&partner_id={partner_id}&time_stamp={time_stamp}'
+    randomStr = getRandStr(16)
+    paramStr = f'key_index={key_index}&nonce={randomStr}&partner_id={partner_id}&time_stamp={time_stamp}'
     sign = getSign(paramStr)
     return f'{paramStr}&sign={sign}'
 
@@ -64,15 +81,24 @@ def getCoverUrl(picResourcePath):
     picRes = getResouceInfo(picResourcePath)
     print('上传图片Response:'+picRes)
     picRes = json.loads(picRes)
-    coverUrl = picRes['image']
+    coverUrl = ''
+    if picRes['msg'] != 'success':
+        print('上传图片失败！！！')
+    else:
+        coverUrl = picRes['image']
     return coverUrl
+
 
 def getVedioId(vedioResourcePath):
     print('正在上传视频：'+vedioResourcePath)
     vedioRes = getResouceInfo(vedioResourcePath)
     print('上传视频Response：'+vedioRes)
     vedioRes = json.loads(vedioRes)
-    videoId = vedioRes['video']
+    videoId = ''
+    if vedioRes['msg'] != 'success':
+        print('上传视频失败！！！')
+    else:
+        videoId = vedioRes['video']
     return videoId
 
 

@@ -260,3 +260,8 @@ python TikTokCommand.py -l https://live.douyin.com/802939216127 -p /path/to/down
 # Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=imgyh/tiktok&type=Date)](https://star-history.com/#imgyh/tiktok&Date)
+
+
+![img.png](img/img.png)
+
+![img_1.png](img/img_1.png)
